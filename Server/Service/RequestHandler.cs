@@ -11,12 +11,11 @@ namespace Server.Service
 {
     class RequestHandler
     {
-        readonly private static string connectionString = "data source=(LocalDB)\\MSSQLLocalDB;attachdbfilename=C:\\Users\\Максим\\source\\repos\\NetworkChat\\Server\\Users.mdf;integrated security=True;connect timeout=30;MultipleActiveResultSets=True;App=EntityFramework&quot";
+        readonly private static string connectionString = "data source=(LocalDB)\\MSSQLLocalDB;attachdbfilename=.\\Users.mdf;integrated security=True;connect timeout=30;MultipleActiveResultSets=True;App=EntityFramework&quot";
         readonly private SqlConnection connection = new SqlConnection(connectionString);
         
         public string Start(string request)
         {
-            string result;
             var user = JsonConvert.DeserializeObject<User>(request);
             string mySelectQuery = "SELECT * FROM [User] WHERE [login] = '" + user.login + "'and [password]='" + user.password + "'";
             using (SqlDataAdapter dataAdapter = new SqlDataAdapter(mySelectQuery, connectionString))
@@ -25,7 +24,7 @@ namespace Server.Service
                 dataAdapter.Fill(table);
                 if (table.Rows.Count != 0)
                 {
-                    return result = user.login;
+                    return user.login;
                 }
                 else
                 {

@@ -27,7 +27,8 @@ namespace NetworkChat
             Client client = new Client();
             IsAuthenticated = client.Start("1", JsonConvert.SerializeObject(new User(tbLogin.Text, tbPassword.Text)));
             if (IsAuthenticated == true)
-            {       
+            {
+                Close();
             }
             else MessageBox.Show("Неверный логин или пароль");
             

@@ -9,15 +9,12 @@ namespace NetworkChat.Service
 {
     class Client
     {
-        private const int port = 8888;
-        private const string server = "127.0.0.1";
         private bool result;
 
         public bool Start(string message, string user)
         {
-            TcpClient client = new TcpClient();
-            client.Connect(server, port);
-            NetworkStream stream = client.GetStream();
+            ServerConnector connector = ServerConnector.GetInstance();
+            NetworkStream stream = connector.Client.GetStream();
             if (message == "1")
             {
                 byte[] dataMessage = Encoding.UTF8.GetBytes(message);
@@ -41,7 +38,6 @@ namespace NetworkChat.Service
             else result = false;
             while (stream.DataAvailable) ;
             stream.Close();
-            client.Close();
             return result;
         }
     }
