@@ -25,12 +25,23 @@ namespace NetworkChat
         private void btnSignIn_Click(object sender, EventArgs e)
         {
             Client client = new Client();
-            IsAuthenticated = client.Start("1", JsonConvert.SerializeObject(new User(tbLogin.Text, tbPassword.Text)));
-            if (IsAuthenticated == true)
+            string result = string.Empty;
+            if (tbLogin.Text != string.Empty && tbPassword.Text != string.Empty)
             {
-                Close();
+                Thread thread = new Thread(new ThreadStart(() => 
+                {
+                    result = client.Start("4", JsonConvert.SerializeObject(new User(tbLogin.Text, tbPassword.Text)), "1");
+                    if (result != "false")
+                    {
+                        IsAuthenticated = true;
+                        Close();
+                    }
+                    else MessageBox.Show("Неверный логин или пароль");
+                }));
+                thread.Start();
             }
-            else MessageBox.Show("Неверный логин или пароль");
+            else MessageBox.Show("Некоректные данные");
+            
             
         }
 

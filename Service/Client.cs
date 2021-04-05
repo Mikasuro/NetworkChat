@@ -7,38 +7,30 @@ using System.Threading.Tasks;
 
 namespace NetworkChat.Service
 {
-    class Client
+    public class Client
     {
-        private bool result;
-
-        public bool Start(string message, string user)
+        public string Start(string id, string user, string message)
         {
             ServerConnector connector = ServerConnector.GetInstance();
             NetworkStream stream = connector.Client.GetStream();
-            if (message == "1")
+            string request = string.Empty;
+            if (id == "3")
             {
-                byte[] dataMessage = Encoding.UTF8.GetBytes(message);
-                stream.Write(dataMessage, 0, dataMessage.Length);
-                byte[] dataRead = new byte[256];
-                int bytes = stream.Read(dataRead, 0, dataRead.Length);
-                message = Encoding.UTF8.GetString(dataRead, 0, bytes);
-                if (message == "2")
-                {
-                    byte[] dataUser = Encoding.UTF8.GetBytes(user);
-                    stream.Write(dataUser, 0, dataUser.Length);
-                }
+                request = GetList.Get(stream, id);
             }
-            byte[] dataResult = new byte[256];
-            int bytesResult = stream.Read(dataResult, 0, dataResult.Length);
-            message = Encoding.UTF8.GetString(dataResult, 0, bytesResult);
-            if (message == "5")
+            if (id == "4")
             {
-                result = true;
+                request = SendRequest.Send(stream, id, user, message);
             }
-            else result = false;
-            while (stream.DataAvailable) ;
-            stream.Close();
-            return result;
+            if (id == "5")
+            {
+                SendMessage.Send(stream, message);
+            }
+            if (id == "6")
+            {
+                GetMessage.Get(stream);
+            }
+            return request;
         }
     }
 }

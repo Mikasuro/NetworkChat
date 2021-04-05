@@ -9,29 +9,44 @@ using System.Threading.Tasks;
 
 namespace Server.Service
 {
-    class RequestHandler
+    public class RequestHandler
     {
-        readonly private static string connectionString = "data source=(LocalDB)\\MSSQLLocalDB;attachdbfilename=.\\Users.mdf;integrated security=True;connect timeout=30;MultipleActiveResultSets=True;App=EntityFramework&quot";
+        readonly private static string connectionString = "data source=(LocalDB)\\MSSQLLocalDB;attachdbfilename=C:\\Users\\Максим\\source\\repos\\NetworkChat\\Server\\Users.mdf;integrated security=True;connect timeout=30;MultipleActiveResultSets=True;App=EntityFramework&quot";
         readonly private SqlConnection connection = new SqlConnection(connectionString);
         
-        public string Start(string request)
+        public string Start(string message, string request)
         {
-            var user = JsonConvert.DeserializeObject<User>(request);
-            string mySelectQuery = "SELECT * FROM [User] WHERE [login] = '" + user.login + "'and [password]='" + user.password + "'";
-            using (SqlDataAdapter dataAdapter = new SqlDataAdapter(mySelectQuery, connectionString))
+            var result = string.Empty;
+            if (message == "1")
             {
-                DataTable table = new DataTable();
-                dataAdapter.Fill(table);
-                if (table.Rows.Count != 0)
+                var user = JsonConvert.DeserializeObject<User>(request);
+                string mySelectQuery = "SELECT * FROM [User] WHERE [login] = '" + user.login + "'and [password]='" + user.password + "'";
+                using (SqlDataAdapter dataAdapter = new SqlDataAdapter(mySelectQuery, connectionString))
                 {
-                    return user.login;
+                    DataTable table = new DataTable();
+                    dataAdapter.Fill(table);
+                    if (table.Rows.Count != 0)
+                    {
+                        result = user.login;
+                    }
+                    else
+                    {
+                        result = string.Empty;
+                    }
                 }
-                else
-                {
-                    return null;
-                }
+                return result;
             }
-
+            else
+            {
+                var user = JsonConvert.DeserializeObject<User>(request);
+                SqlCommand command = new SqlCommand("INSERT INTO [User] (login, password) VALUES (@login, @password)", connection);
+                command.Parameters.Add("login", user.login);
+                command.Parameters.Add("password", user.password);
+                command.Connection.Open();
+                command.ExecuteNonQuery();
+                command.Connection.Close();
+                return user.login;
+            }
         }
     }
 }

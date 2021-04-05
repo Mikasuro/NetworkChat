@@ -86,6 +86,7 @@ namespace NetworkChat
             this.btnSignUp.TabIndex = 7;
             this.btnSignUp.Text = "Подтвердить";
             this.btnSignUp.UseVisualStyleBackColor = true;
+            this.btnSignUp.Click += new System.EventHandler(this.btnSignUp_Click);
             // 
             // SignUp
             // 
@@ -103,7 +104,6 @@ namespace NetworkChat
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MinimizeBox = false;
             this.Name = "SignUp";
-            this.Text = "SignUp";
             this.ResumeLayout(false);
             this.PerformLayout();
 
