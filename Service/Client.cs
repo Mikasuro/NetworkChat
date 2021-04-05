@@ -14,21 +14,28 @@ namespace NetworkChat.Service
             ServerConnector connector = ServerConnector.GetInstance();
             NetworkStream stream = connector.Client.GetStream();
             string request = string.Empty;
-            if (id == "3")
+            try
             {
-                request = GetList.Get(stream, id);
+                if (id == "3")
+                {
+                    request = GetList.Get(stream, id);
+                }
+                if (id == "4")
+                {
+                    request = SendRequest.Send(stream, id, user, message);
+                }
+                if (id == "5")
+                {
+                    SendMessage.Send(stream, id, message);
+                }
+                if (id == "6")
+                {
+                    request = GetMessage.Get(stream, id);
+                }
             }
-            if (id == "4")
+            catch
             {
-                request = SendRequest.Send(stream, id, user, message);
-            }
-            if (id == "5")
-            {
-                SendMessage.Send(stream, message);
-            }
-            if (id == "6")
-            {
-                GetMessage.Get(stream);
+
             }
             return request;
         }

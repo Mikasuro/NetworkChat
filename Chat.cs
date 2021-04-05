@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,44 +21,56 @@ namespace NetworkChat
 {
     public partial class Chat : Form
     {
-        private System.Windows.Forms.Timer timer;
-        public static string Message { get; set; }
+        public System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+        public System.Windows.Forms.Timer timer1 = new System.Windows.Forms.Timer();
+        public static string UserName { get; set; }
         public Client client = new Client();
         public static List<string> list = new List<string>();
-        public static Dispatcher dispatcher;
         public static List<string> messageList = new List<string>();
-
 
         public Chat()
         {
             InitializeComponent();
         }
-
-        private void Chat_Load(object sender, EventArgs e)
+        public void Chat_Load(object sender, EventArgs e)
         {
-            var message = client.Start("3", null, null);
-            var result = JsonConvert.DeserializeObject<List<string>>(message);
-            foreach (var item in result)
+            timer.Tick += Timer_Tick1;
+            timer.Interval = 100;
+            timer.Start();
+        }
+        private void Timer_Tick1(object sender, EventArgs e)
+        {
+            var mes = client.Start("3", null, null);
+            var result = JsonConvert.DeserializeObject<List<string>>(mes);
+            list = listBox1.Items.Cast<object>().Select(obj => obj.ToString()).ToList();
+            if (!list.SequenceEqual(result))
             {
-                listBox1.Items.Add(item);
+                listBox1.Items.Clear();
+                foreach (var item in result)
+                {
+                    listBox1.Items.Add(item);
+                }
             }
-            Thread thread = new Thread(new ThreadStart(() =>
+            var listMessage = client.Start("6", null, null);
+            var res = JsonConvert.DeserializeObject<List<string>>(listMessage);
+            messageList = listBox2.Items.Cast<object>().Select(obj => obj.ToString()).ToList();
+            if (!messageList.SequenceEqual(res))
             {
-                client.Start("6", null, null);
-            }));
-            thread.Start();
-
+                listBox2.Items.Clear();
+                foreach (var item in res)
+                {
+                    
+                    listBox2.Items.Add(item);
+                    int visibleItems = listBox2.ClientSize.Height / listBox2.ItemHeight;
+                    listBox2.TopIndex = Math.Max(listBox2.Items.Count - visibleItems + 1, 0);
+                }
+            }
         }
 
 
-        private void sendMessage_Click(object sender, EventArgs e)
+        public void sendMessage_Click(object sender, EventArgs e)
         {
-            MessageForChat message = new MessageForChat();
-            message.Id = "5";
-            message.Message = tbMessage.Text;
-            var result = JsonConvert.SerializeObject(message);
-            client.Start(message.Id, null, result);
-            listView1.Items.Add(Message);
+            client.Start("5", null, UserName + ": " + tbMessage.Text.ToString());
             tbMessage.Clear();
         }
     }

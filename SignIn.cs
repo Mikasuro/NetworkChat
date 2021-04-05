@@ -28,17 +28,14 @@ namespace NetworkChat
             string result = string.Empty;
             if (tbLogin.Text != string.Empty && tbPassword.Text != string.Empty)
             {
-                Thread thread = new Thread(new ThreadStart(() => 
+                result = client.Start("4", JsonConvert.SerializeObject(new User(tbLogin.Text, tbPassword.Text)), "1");
+                if (result != "false")
                 {
-                    result = client.Start("4", JsonConvert.SerializeObject(new User(tbLogin.Text, tbPassword.Text)), "1");
-                    if (result != "false")
-                    {
-                        IsAuthenticated = true;
-                        Close();
-                    }
-                    else MessageBox.Show("Неверный логин или пароль");
-                }));
-                thread.Start();
+                    IsAuthenticated = true;
+                    Chat.UserName = tbLogin.Text;
+                    Close();
+                }
+                else MessageBox.Show("Неверный логин или пароль");
             }
             else MessageBox.Show("Некоректные данные");
             

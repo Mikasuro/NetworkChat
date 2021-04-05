@@ -15,16 +15,9 @@ namespace Server
     
     public partial class UsersEntities : DbContext
     {
-        private static UsersEntities _context;
         public UsersEntities()
             : base("name=UsersEntities")
         {
-        }
-        public static UsersEntities GetContext()
-        {
-            if (_context == null)
-                _context = new UsersEntities();
-            return _context;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
